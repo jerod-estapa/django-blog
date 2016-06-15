@@ -22,6 +22,7 @@ def popular_context():
 
 def index(request):
     latest_posts = Post.objects.all().order_by('-created_at')
+    popular_posts = popular_context()
     t = loader.get_template('blog/index.html')
     context_dict = {
         'latest_posts': latest_posts,
