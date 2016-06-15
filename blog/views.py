@@ -1,10 +1,11 @@
 # blog - views.py
 
-from django.shortcuts import render, get_object_or_404
-from django.template import Context, loader
+from django.shortcuts import render_to_response, get_object_or_404, redirect
+from django.template import Context, loader, RequestContext
 from django.http import HttpResponse
 
 from models import Post
+from forms import PostForm
 
 
 # helper functions
@@ -47,3 +48,17 @@ def post(request, post_url):
     t = loader.get_template('blog/post.html')
     c = Context(context_dict)
     return HttpResponse(t.render(c))
+
+
+def add_post(request):
+    context = RequestContext(request)
+    if request.method == 'POST':
+        form = PostForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save(commit=True)
+            return redirect(index)
+        else:
+            print form.errors
+    else:
+        form = PostForm()
+    return render_to_response('blog/add_post.html', {'form': form}, context)
